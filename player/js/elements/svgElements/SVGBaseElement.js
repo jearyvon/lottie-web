@@ -11,6 +11,7 @@ SVGBaseElement.prototype = {
         this.maskedElement = this.layerElement;
         this._sizeChanged = false;
         var layerElementParent = null;
+
         //If this layer acts as a mask for the following layer
         var filId, fil, gg;
         if (this.data.td) {
@@ -95,6 +96,9 @@ SVGBaseElement.prototype = {
         if (this.data.cl) {
             this.layerElement.setAttribute('class', this.data.cl);
         }
+        if (this.data.tag) {
+            this.layerElement.setAttribute('class', this.data.tag + "-" + this.data.ind);
+        }
         //Clipping compositions to hide content that exceeds boundaries. If collapsed transformations is on, component should not be clipped
         if (this.data.ty === 0 && !this.data.hd) {
             var cp = createNS( 'clipPath');
@@ -123,7 +127,6 @@ SVGBaseElement.prototype = {
         if (this.data.bm !== 0) {
             this.setBlendMode();
         }
-
     },
     renderElement: function() {
         if (this.finalTransform._matMdf) {

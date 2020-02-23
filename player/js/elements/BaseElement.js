@@ -43,8 +43,8 @@ BaseElement.prototype = {
         this.globalData = globalData;
         this.comp = comp;
         this.data = data;
+        this.tag = data.tag + "-" + data.ind;
         this.layerId = createElementID();
-        
         //Stretch factor for old animations missing this property.
         if(!this.data.sr){
             this.data.sr = 1;

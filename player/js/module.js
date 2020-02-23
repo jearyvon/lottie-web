@@ -112,6 +112,7 @@ function getQueryVariable(variable) {
     }
 }
 var standalone = '__[STANDALONE]__';
+// var standalone = false;
 var animationData = '__[ANIMATIONDATA]__';
 var renderer = '';
 if (standalone) {
@@ -124,3 +125,5 @@ if (standalone) {
     renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
+
+export default lottie;

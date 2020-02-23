@@ -5,7 +5,7 @@ const UglifyJS = require("uglify-js");
 const rootFolder = 'player/';
 const bm_version = '5.6.4';
 const buildReducedVersion = process.argv[2] === 'reduced'
-const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
+const defaultBuilds = ['full','svg_light','svg']
 
 const scripts = [
 	{
@@ -69,16 +69,8 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/utils/DataManagerWorkerOverrides.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/utils/FontManager.js',
 		builds: defaultBuilds
-	},
-	{
-		src: 'js/utils/FontManagerWorkerOverride.js',
-		builds: ['canvas_worker']
 	},
 	{
 		src: 'js/utils/PropertyFactory.js',
@@ -133,10 +125,6 @@ const scripts = [
 		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light']
 	},
 	{
-		src: 'js/utils/imagePreloaderWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/utils/featureSupport.js',
 		builds: defaultBuilds
 	},
@@ -147,10 +135,6 @@ const scripts = [
 	{
 		src: 'js/utils/asset_loader.js',
 		builds: defaultBuilds
-	},
-	{
-		src: 'js/utils/asset_loader_worker_override.js',
-		builds: ['canvas_worker']
 	},
 	{
 		src: 'js/utils/text/TextAnimatorProperty.js',
@@ -208,18 +192,10 @@ const scripts = [
 		src: 'js/renderers/SVGRenderer.js',
 		builds: defaultBuilds
 	},
-	{
-		src: 'js/renderers/CanvasRenderer.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/renderers/CanvasRendererWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
-	{
-		src: 'js/renderers/HybridRenderer.js',
-		builds: ['full','html','html_light']
-	},
+	// {
+	// 	src: 'js/renderers/HybridRenderer.js',
+	// 	builds: ['full','html','html_light']
+	// },
 	{
 		src: 'js/mask.js',
 		builds: defaultBuilds
@@ -288,10 +264,10 @@ const scripts = [
 		src: 'js/elements/helpers/shapes/ShapeTransformManager.js',
 		builds: defaultBuilds
 	},
-	{
-		src: 'js/elements/helpers/shapes/CVShapeData.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
+	// {
+	// 	src: 'js/elements/helpers/shapes/CVShapeData.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
 	{
 		src: 'js/elements/BaseElement.js',
 		builds: defaultBuilds
@@ -372,90 +348,90 @@ const scripts = [
 		src: 'js/elements/svgElements/SVGEffects.js',
 		builds: ['full','svg','svg_light','html','html_light']
 	},
-	{
-		src: 'js/elements/canvasElements/CVContextData.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVBaseElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVImageElement.js',
-		builds: ['full','canvas','canvas_light']
-	},
-	{
-		src: 'js/elements/canvasElements/CVCompElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVMaskElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVShapeElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVSolidElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/canvasElements/CVTextElement.js',
-		builds: ['full','canvas','canvas_light']
-	},
-	{
-		src: 'js/elements/canvasElements/CVEffects.js',
-		builds: ['full','canvas','canvas_light','html','html_light','canvas_worker']
-	},
-	{
-		src: 'js/elements/htmlElements/HBaseElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HSolidElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HCompElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HShapeElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HTextElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HImageElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HCameraElement.js',
-		builds: ['full','html','html_light']
-	},
-	{
-		src: 'js/elements/htmlElements/HEffects.js',
-		builds: ['full','html','html_light']
-	},
+	// {
+	// 	src: 'js/elements/canvasElements/CVContextData.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVBaseElement.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVImageElement.js',
+	// 	builds: ['full','canvas','canvas_light']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVCompElement.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVMaskElement.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVShapeElement.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVSolidElement.js',
+	// 	builds: ['full','canvas','canvas_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVTextElement.js',
+	// 	builds: ['full','canvas','canvas_light']
+	// },
+	// {
+	// 	src: 'js/elements/canvasElements/CVEffects.js',
+	// 	builds: ['full','canvas','canvas_light','html','html_light','canvas_worker']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HBaseElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HSolidElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HCompElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HShapeElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HTextElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HImageElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HCameraElement.js',
+	// 	builds: ['full','html','html_light']
+	// },
+	// {
+	// 	src: 'js/elements/htmlElements/HEffects.js',
+	// 	builds: ['full','html','html_light']
+	// },
 	{
 		src: 'js/animation/AnimationManager.js',
 		builds: defaultBuilds
 	},
-	{
-		src: 'js/animation/AnimationManagerWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
+	// {
+	// 	src: 'js/animation/AnimationManagerWorkerOverride.js',
+	// 	builds: ['canvas_worker']
+	// },
 	{
 		src: 'js/animation/AnimationItem.js',
 		builds: defaultBuilds
 	},
-	{
-		src: 'js/animation/AnimationItemWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
+	// {
+	// 	src: 'js/animation/AnimationItemWorkerOverride.js',
+	// 	builds: ['canvas_worker']
+	// },
 	{
 		src: 'js/utils/expressions/Expressions.js',
 		builds: ['full','svg','canvas','html','canvas_worker']

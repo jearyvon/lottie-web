@@ -12,6 +12,7 @@ BaseRenderer.prototype.checkLayers = function(num){
         }
         this.completeLayers = this.elements[i] ? this.completeLayers:false;
     }
+
     this.checkPendingElements();
 };
 

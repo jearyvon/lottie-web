@@ -10,7 +10,7 @@ function SVGRenderer(animationItem, config){
         titleElement.setAttribute('id', titleId);
         titleElement.textContent = config.title;
         this.svgElement.appendChild(titleElement);
-        ariaLabel += titleId;
+        // ariaLabel += titleId;
     }
     if (config && config.description) {
         var descElement = createNS('desc');
@@ -18,11 +18,11 @@ function SVGRenderer(animationItem, config){
         descElement.setAttribute('id', descId);
         descElement.textContent = config.description;
         this.svgElement.appendChild(descElement);
-        ariaLabel += ' ' + descId;
+        // ariaLabel += ' ' + descId;
     }
-    if (ariaLabel) {
-        this.svgElement.setAttribute('aria-labelledby', ariaLabel)
-    }
+    // if (ariaLabel) {
+    //     this.svgElement.setAttribute('aria-labelledby', ariaLabel)
+    // }
     var defs = createNS( 'defs');
     this.svgElement.appendChild(defs);
     var maskElement = createNS('g');
@@ -42,6 +42,7 @@ function SVGRenderer(animationItem, config){
 
     this.globalData = {
         _mdf: false,
+        imageSource:{},
         frameNum: -1,
         defs: defs,
         renderConfig: this.renderConfig
@@ -64,6 +65,7 @@ SVGRenderer.prototype.createShape = function (data) {
 };
 
 SVGRenderer.prototype.createText = function (data) {
+
     return new SVGTextElement(data,this.globalData,this);
 
 };
@@ -157,6 +159,12 @@ SVGRenderer.prototype.buildItem  = function(pos){
         return;
     }
     elements[pos] = true;
+    var tag = "ckt";
+    if(this.data.refId){
+        tag = this.data.refId;
+    }
+    this.layers[pos].tag = tag;
+
     var element = this.createItem(this.layers[pos]);
 
     elements[pos] = element;
@@ -211,6 +219,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     this.globalData._mdf = false;
     var i, len = this.layers.length;
     if(!this.completeLayers){
+
         this.checkLayers(num);
     }
     for (i = len - 1; i >= 0; i--) {
@@ -219,6 +228,7 @@ SVGRenderer.prototype.renderFrame = function(num){
         }
     }
     if(this.globalData._mdf) {
+
         for (i = 0; i < len; i += 1) {
             if(this.completeLayers || this.elements[i]){
                 this.elements[i].renderFrame();

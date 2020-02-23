@@ -11,16 +11,32 @@
             overflow-y: auto;
         }
 
-        #lottie{
+        #content{
+            position: relative;
             background-color:#ccc;
-            width:100%;
-            height:100%;
+            width:360px;
+            height:640px;
             display:block;
             overflow: hidden;
             transform: translate3d(0,0,0);
+            margin: 30px auto;
             /*display:none;*/
         }
-
+        #edit{
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 1px dashed #333333;
+            display: block;
+        }
+        #tools{
+            width: 500px;
+            height: 20px;
+            margin: 0 auto;
+        }
+        #fr-txt{
+            font-size: 18px;
+        }
     </style>
     <!-- build:js lottie.js -->
     <script src="js/main.js"></script>
@@ -75,7 +91,7 @@
     <script src="js/renderers/SVGRenderer.js"></script>
     <script src="js/renderers/CanvasRenderer.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <!-- <script src="js/renderers/CanvasRendererWorkerOverride.js" data-builds="canvas_worker"></script> -->
-    <script src="js/renderers/HybridRenderer.js" data-builds="full,html,html_light"></script>
+<!--    <script src="js/renderers/HybridRenderer.js" data-builds="full,html,html_light"></script>-->
     <script src="js/mask.js"></script>
     <script src="js/elements/helpers/HierarchyElement.js"></script>
     <script src="js/elements/helpers/FrameElement.js"></script>
@@ -93,7 +109,6 @@
     <script src="js/elements/helpers/shapes/ShapeGroupData.js"></script>
     <script src="js/elements/helpers/shapes/SVGElementsRenderer.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/helpers/shapes/ShapeTransformManager.js"></script>
-    <script src="js/elements/helpers/shapes/CVShapeData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
     <script src="js/elements/BaseElement.js"></script>
     <script src="js/elements/NullElement.js"></script>
     <script src="js/elements/svgElements/SVGBaseElement.js"></script>
@@ -114,23 +129,6 @@
     <script src="js/elements/svgElements/effects/SVGDropShadowEffect.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/effects/SVGMatte3Effect.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGEffects.js" data-builds="full,svg,svg_light,html,html_light"></script>
-    <script src="js/elements/canvasElements/CVContextData.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVBaseElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVImageElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVCompElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVMaskElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVShapeElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVSolidElement.js" data-builds="full,canvas,canvas_light,canvas_worker"></script>
-    <script src="js/elements/canvasElements/CVTextElement.js" data-builds="full,canvas,canvas_light"></script>
-    <script src="js/elements/canvasElements/CVEffects.js" data-builds="full,canvas,canvas_light,html,html_light,canvas_worker"></script>
-    <script src="js/elements/htmlElements/HBaseElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HSolidElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HCompElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HShapeElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HTextElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HImageElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HCameraElement.js" data-builds="full,html,html_light"></script>
-    <script src="js/elements/htmlElements/HEffects.js" data-builds="full,html,html_light"></script>
     <script src="js/animation/AnimationManager.js"></script>
     <!-- <script src="js/animation/AnimationManagerWorkerOverride.js" data-builds="canvas_worker"></script> -->
     <script src="js/animation/AnimationItem.js"></script>
@@ -157,35 +155,87 @@
     <!-- end Expressions -->
     <!-- endbuild -->
     <script src="js/module.js" ></script>
-    <!-- <script src="lottie.js"></script> -->
+     <script src="lottie_api.js"></script>
     <!-- <script src="bodymovin_light.js"></script> -->
 
 
 
 </head>
 <body>
-<div id="lottie"></div>
 
+<div id="content">
+    <div id="lottie"></div>
+    <div id="edit"></div>
+</div>
+
+<div id="tools">
+    <form>
+        <input id="scroll" max="288" min="0"  value="0" type="range" >
+    </form>
+    <span id="fr-txt">0</span>
+    <button id="btn">点击触发</button>
+</div>
 <script>
     var anim;
     var elem = document.getElementById('lottie');
+
     var animData = {
         container: elem,
         renderer: 'svg',
         loop: false,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
-            progressiveLoad:true,
+            progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
             imagePreserveAspectRatio: 'xMidYMid meet',
-            title: 'TEST TITLE',
-            description: 'TEST DESCRIPTION',
+            id:"svgg"
         },
-        path: 'exports/render/data.json'
+        path: './data/data.json'
     };
     // lottie.setQuality('low');
     anim = lottie.loadAnimation(animData);
-    anim.setSubframe(false);
+    // anim.goToAndStop(100,true);
+    document.getElementById("scroll").addEventListener("change",(e)=>{
+        let value = e.target.value;
+        console.log(value)
+        anim.goToAndStop(parseInt(value),true);
+        document.getElementById('fr-txt').innerText = value;
+    })
+    let editorBox = document.getElementById('edit');
+    let lottieBox = document.getElementById('lottie');
+    let boxRect = lottieBox.getBoundingClientRect();
+    lottieBox.addEventListener('click',(e)=>{
+        console.log(e);
+        let eleTar = e.target.parentElement.parentElement;
+        console.log(eleTar.getAttribute("class"))
+        if(eleTar && eleTar.getAttribute("class").indexOf("comp")>-1){
+            let rect = eleTar.getBoundingClientRect();
+            let bbox = eleTar.getBBox();
+            console.log(rect,bbox)
+            editorBox.style.width = rect.width  + "px";
+            editorBox.style.height = rect.height + "px";
+            editorBox.style.top = (rect.y - boxRect.y) + "px";
+            editorBox.style.left = (rect.x - boxRect.x) + "px";
+            editorBox.style.display = "block";
+        }else{
+            editorBox.style.display = "none";
+        }
+    })
+
+
+    document.getElementById("btn").addEventListener("click",(e)=>{
+        console.log(anim)
+        // fetch('./data/data.json')
+        //     .then(function(response) {
+        //         return response.json();
+        //     })
+        //     .then(function(myJson) {
+        //         myJson.assets[1].p = "img_1.jpg"
+        //         anim.setData(elem,myJson)
+        //     });
+        // anim.setData(elem,)
+
+    })
     anim.onError = function(errorType, nativeError, errorProps) {
         console.log(errorType)
     }
@@ -193,6 +243,14 @@
     anim.addEventListener('error', function(error) {
         console.log(error)
     })
+
+    window.fontFace = new FontFace('xiaowei', "url(fonts/zhankuxiaoweiLOGOti.OTF)");
+    window.fontFace.load().then(res=>{
+        console.log(res)
+    }).catch(err=>{
+        console.error(err)
+    })
+   // window.animationAPI = lottie_api.createAnimationApi(anim);
 
 </script>
 

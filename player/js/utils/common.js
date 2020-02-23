@@ -112,7 +112,7 @@ function BMAnimationConfigErrorEvent(type, nativeError) {
 var createElementID = (function(){
     var _count = 0;
     return function createID() {
-        return '__lottie_element_' + ++_count
+        return 've-' + ++_count
     }
 }())
 

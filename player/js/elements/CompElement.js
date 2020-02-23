@@ -33,6 +33,7 @@ ICompElement.prototype.prepareFrame = function(num){
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
+
     if(!this.isInRange && !this.data.xt){
         return;
     }

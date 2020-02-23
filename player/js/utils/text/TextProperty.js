@@ -299,8 +299,9 @@ TextProperty.prototype.completeTextData = function(documentData) {
         }else{
             //var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
             //tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-            cLength = fontManager.measureText(val, documentData.f, documentData.finalSize);
+            cLength = documentData.finalSize;
         }
+
 
         //
         if(currentChar === ' '){

@@ -13,6 +13,7 @@ var assetLoader = (function(){
 	function loadAsset(path, callback, errorCallback) {
 		var response;
 		var xhr = new XMLHttpRequest();
+		console.log(path)
 		xhr.open('GET', path, true);
 		// set responseType after calling open or IE will break.
 		try {

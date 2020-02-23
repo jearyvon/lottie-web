@@ -1,6 +1,6 @@
 var FontManager = (function(){
 
-    var maxWaitingTime = 5000;
+    var maxWaitingTime = 1000;
     var emptyChar = {
         w: 0,
         size:0,
@@ -73,30 +73,32 @@ var FontManager = (function(){
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
             setTimeout(this.checkLoadedFonts.bind(this),20);
         }else{
-            setTimeout(function(){this.isLoaded = true;}.bind(this),0);
-
+            // setTimeout(function(){this.isLoaded = true;}.bind(this),0);
+            this.isLoaded = true;
         }
+
     }
 
     function createHelper(def, fontData){
-        var tHelper = createNS('text');
-        tHelper.style.fontSize = '100px';
-        //tHelper.style.fontFamily = fontData.fFamily;
-        tHelper.setAttribute('font-family', fontData.fFamily);
-        tHelper.setAttribute('font-style', fontData.fStyle);
-        tHelper.setAttribute('font-weight', fontData.fWeight);
-        tHelper.textContent = '1';
-        if(fontData.fClass){
-            tHelper.style.fontFamily = 'inherit';
-            tHelper.setAttribute('class', fontData.fClass);
-        } else {
-            tHelper.style.fontFamily = fontData.fFamily;
-        }
-        def.appendChild(tHelper);
-        var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
-        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
-        return tHelper;
+        // var tHelper = createNS('text');
+        // tHelper.style.fontSize = '100px';
+        // //tHelper.style.fontFamily = fontData.fFamily;
+        // tHelper.setAttribute('font-family', fontData.fFamily);
+        // tHelper.setAttribute('font-style', fontData.fStyle);
+        // tHelper.setAttribute('font-weight', fontData.fWeight);
+        // tHelper.textContent = '1';
+        // if(fontData.fClass){
+        //     tHelper.style.fontFamily = 'inherit';
+        //     tHelper.setAttribute('class', fontData.fClass);
+        // } else {
+        //     tHelper.style.fontFamily = fontData.fFamily;
+        // }
+        // def.appendChild(tHelper);
+        // // var tCanvasHelper = createTag('canvas').getContext('2d');
+        // // tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        // // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        // return null;
+        return {};
     }
 
     function addFonts(fontData, defs){
@@ -104,6 +106,7 @@ var FontManager = (function(){
             this.isLoaded = true;
             return;
         }
+        //this.chars is null
         if(this.chars){
             this.isLoaded = true;
             this.fonts = fontData.list;
@@ -118,67 +121,32 @@ var FontManager = (function(){
             var shouldLoadFont = true;
             var loadedSelector;
             var j;
-            fontArr[i].loaded = false;
-            fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
-            fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
-            if(!fontArr[i].fPath) {
-                fontArr[i].loaded = true;
-                _pendingFonts -= 1;
-            }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
-                loadedSelector = document.querySelectorAll('style[f-forigin="p"][f-family="'+ fontArr[i].fFamily +'"], style[f-origin="3"][f-family="'+ fontArr[i].fFamily +'"]');
+            fontArr[i].loaded = true;
+            // fontArr[i].monoCase = setUpNode(fontArr[i].fFamily,'monospace');
+            // fontArr[i].sansCase = setUpNode(fontArr[i].fFamily,'sans-serif');
+            // if(!fontArr[i].fPath) {
+            //     fontArr[i].loaded = true;
+            //     _pendingFonts -= 1;
+            // }else if(fontArr[i].fOrigin === 'p' || fontArr[i].origin === 3){
+            //     loadedSelector = document.querySelectorAll('style[f-forigin="p"][f-family="'+ fontArr[i].fFamily +'"], style[f-origin="3"][f-family="'+ fontArr[i].fFamily +'"]');
+            //
+            //     if (loadedSelector.length > 0) {
+            //         shouldLoadFont = false;
+            //     }
+            //
+            //     if (shouldLoadFont) {
+            //         var s = createTag('style');
+            //         s.setAttribute('f-forigin', fontArr[i].fOrigin);
+            //         s.setAttribute('f-origin', fontArr[i].origin);
+            //         s.setAttribute('f-family', fontArr[i].fFamily);
+            //         s.type = "text/css";
+            //         s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
+            //         defs.appendChild(s);
+            //     }
+            // }
 
-                if (loadedSelector.length > 0) {
-                    shouldLoadFont = false;
-                }
-
-                if (shouldLoadFont) {
-                    var s = createTag('style');
-                    s.setAttribute('f-forigin', fontArr[i].fOrigin);
-                    s.setAttribute('f-origin', fontArr[i].origin);
-                    s.setAttribute('f-family', fontArr[i].fFamily);
-                    s.type = "text/css";
-                    s.innerHTML = "@font-face {" + "font-family: "+fontArr[i].fFamily+"; font-style: normal; src: url('"+fontArr[i].fPath+"');}";
-                    defs.appendChild(s);
-                }
-            } else if(fontArr[i].fOrigin === 'g' || fontArr[i].origin === 1){
-                loadedSelector = document.querySelectorAll('link[f-forigin="g"], link[f-origin="1"]');
-
-                for (j = 0; j < loadedSelector.length; j++) {
-                    if (loadedSelector[j].href.indexOf(fontArr[i].fPath) !== -1) {
-                        // Font is already loaded
-                        shouldLoadFont = false;
-                    }
-                }
-
-                if (shouldLoadFont) {
-                    var l = createTag('link');
-                    l.setAttribute('f-forigin', fontArr[i].fOrigin);
-                    l.setAttribute('f-origin', fontArr[i].origin);
-                    l.type = "text/css";
-                    l.rel = "stylesheet";
-                    l.href = fontArr[i].fPath;
-                    document.body.appendChild(l);
-                }
-            } else if(fontArr[i].fOrigin === 't' || fontArr[i].origin === 2){
-                loadedSelector = document.querySelectorAll('script[f-forigin="t"], script[f-origin="2"]');
-
-                for (j = 0; j < loadedSelector.length; j++) {
-                    if (fontArr[i].fPath === loadedSelector[j].src) {
-                        // Font is already loaded
-                        shouldLoadFont = false;
-                    }
-                }
-
-                if (shouldLoadFont) {
-                    var sc = createTag('link');
-                    sc.setAttribute('f-forigin', fontArr[i].fOrigin);
-                    sc.setAttribute('f-origin', fontArr[i].origin);
-                    sc.setAttribute('rel','stylesheet');
-                    sc.setAttribute('href',fontArr[i].fPath);
-                    defs.appendChild(sc);
-                }
-            }
-            fontArr[i].helper = createHelper(defs,fontArr[i]);
+            // fontArr[i].helper = createHelper(defs,fontArr[i]);
+            fontArr[i].helper = {};
             fontArr[i].cache = {};
             this.fonts.push(fontArr[i]);
         }
@@ -187,7 +155,8 @@ var FontManager = (function(){
         } else {
             //On some cases even if the font is loaded, it won't load correctly when measuring text on canvas.
             //Adding this timeout seems to fix it
-           setTimeout(this.checkLoadedFonts.bind(this), 100);
+            this.isLoaded = true;
+           // setTimeout(this.checkLoadedFonts.bind(this), 100);
         }
     }
 
