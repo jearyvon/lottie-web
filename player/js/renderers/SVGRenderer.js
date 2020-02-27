@@ -202,7 +202,10 @@ SVGRenderer.prototype.checkPendingElements  = function(){
     }
 };
 
-SVGRenderer.prototype.renderFrame = function(num){
+SVGRenderer.prototype.renderFrame = function(num,update){
+    if(update){
+        this.renderedFrame = 0;
+    }
     if(this.renderedFrame === num || this.destroyed){
         return;
     }

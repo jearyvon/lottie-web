@@ -333,7 +333,9 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
     this.goToAndStop(value, isFrame, name);
     this.play();
 };
-
+AnimationItem.prototype.updateData = function(data,frame){
+    this.setCurrentRawFrameValue(frame);
+}
 AnimationItem.prototype.advanceTime = function (value) {
     if (this.isPaused === true || this.isLoaded === false) {
         return;
