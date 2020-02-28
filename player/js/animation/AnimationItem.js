@@ -52,7 +52,7 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
-
+    this.thumbMode = params.thumbMode?params.thumbMode:false;
     if(params.loop === '' || params.loop === null){
     }else if(params.loop === false){
         this.loop = false;

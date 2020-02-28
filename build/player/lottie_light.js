@@ -1,4 +1,5 @@
-(typeof navigator !== "undefined") && (function(root, factory) {
+/* eslint no-undef: */
+	(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
             return factory(root);
@@ -7635,7 +7636,13 @@ function IImageElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function(){
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
+    var assetPath ='';
+    if(!this.assetData.src){
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+    }else{
+        assetPath = this.assetData.src;
+    }
+    console.log(assetPath);
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");

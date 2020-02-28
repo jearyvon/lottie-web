@@ -621,7 +621,8 @@ function uglifyCode(code) {
 }
 
 async function modularizeCode(code) {
-	return `(typeof navigator !== "undefined") && (function(root, factory) {
+	return `/* eslint no-undef: */
+	(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
             return factory(root);

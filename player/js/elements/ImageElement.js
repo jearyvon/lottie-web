@@ -7,7 +7,12 @@ function IImageElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function(){
-    var assetPath = this.globalData.getAssetsPath(this.assetData);
+    var assetPath ='';
+    if(!this.assetData.src){
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+    }else{
+        assetPath = this.assetData.src;
+    }
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");

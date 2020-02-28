@@ -125,5 +125,3 @@ if (standalone) {
     renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
-
-export default lottie;
