@@ -1,5 +1,6 @@
 function IImageElement(data,globalData,comp){
     this.assetData = globalData.getAssetData(data.refId);
+    this.thumbMode = globalData.thumbMode;
     this.initElement(data,globalData,comp);
     this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
 }
@@ -12,6 +13,9 @@ IImageElement.prototype.createContent = function(){
         assetPath = this.globalData.getAssetsPath(this.assetData);
     }else{
         assetPath = this.assetData.src;
+    }
+    if(this.thumbMode){
+        assetPath = this.assetData.base64;
     }
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");

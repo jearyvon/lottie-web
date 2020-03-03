@@ -193,7 +193,7 @@
         path: './data/data.json'
     };
     // lottie.setQuality('low');
-    anim = lottie.loadAnimation(animData);
+    window.anim = anim = lottie.loadAnimation(animData);
     // anim.goToAndStop(100,true);
     document.getElementById("scroll").addEventListener("change",(e)=>{
         let value = e.target.value;
@@ -225,15 +225,13 @@
 
     document.getElementById("btn").addEventListener("click",(e)=>{
         console.log(anim)
-        // fetch('./data/data.json')
-        //     .then(function(response) {
-        //         return response.json();
-        //     })
-        //     .then(function(myJson) {
-        //         myJson.assets[1].p = "img_1.jpg"
-        //         anim.setData(elem,myJson)
-        //     });
-        // anim.setData(elem,)
+      anim.animationData.assets[14].layers[0].t.d.k[0].s.t="过\r年\r好";
+      anim.renderer.globalData.changedTags=['comp_0-1'];
+      anim.renderer.globalData.changedValue={"comp_0-1":{t:"过\r年\r好"}};
+        // anim.updateData({'comp_0-1':1})
+      anim.renderer.renderFrame(2,true);
+      anim.renderer.globalData.changedTags =[];
+      anim.renderer.globalData.changedValue={};
 
     })
     anim.onError = function(errorType, nativeError, errorProps) {
@@ -243,15 +241,6 @@
     anim.addEventListener('error', function(error) {
         console.log(error)
     })
-
-    window.fontFace = new FontFace('xiaowei', "url(fonts/zhankuxiaoweiLOGOti.OTF)");
-    window.fontFace.load().then(res=>{
-        console.log(res)
-    }).catch(err=>{
-        console.error(err)
-    })
-   // window.animationAPI = lottie_api.createAnimationApi(anim);
-
 </script>
 
 </body>

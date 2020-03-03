@@ -5884,6 +5884,7 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.imageLoader = this.animationItem.imagePreloader;
+    this.globalData.thumbMode = this.animationItem.thumbMode;
     this.globalData.frameId = 0;
     this.globalData.frameRate = animData.fr;
     this.globalData.nm = animData.nm;
@@ -6096,7 +6097,10 @@ SVGRenderer.prototype.checkPendingElements  = function(){
     }
 };
 
-SVGRenderer.prototype.renderFrame = function(num){
+SVGRenderer.prototype.renderFrame = function(num,update){
+    if(update){
+        this.renderedFrame = -1;
+    }
     if(this.renderedFrame === num || this.destroyed){
         return;
     }
@@ -6115,6 +6119,7 @@ SVGRenderer.prototype.renderFrame = function(num){
     if(!this.completeLayers){
 
         this.checkLayers(num);
+
     }
     for (i = len - 1; i >= 0; i--) {
         if(this.completeLayers || this.elements[i]){
@@ -6647,7 +6652,7 @@ function RenderableDOMElement() {}
 
 (function(){
     var _prototype = {
-        initElement: function(data,globalData,comp,tag) {
+        initElement: function(data,globalData,comp) {
             this.initFrame();
             this.initBaseData(data, globalData, comp);
             this.initTransform(data, globalData, comp);
@@ -7642,7 +7647,9 @@ IImageElement.prototype.createContent = function(){
     }else{
         assetPath = this.assetData.src;
     }
-    console.log(assetPath);
+    if(this.thumbMode){
+        assetPath = this.assetData.base64;
+    }
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
@@ -9022,6 +9029,25 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this._findNextElement = function(data, tagId){
+        var foundArr = [];
+        function next(pdata)  {
+            for(var i =0;i < pdata.length; i++){
+                if(pdata[i].elements && pdata[i].elements.length > 0){
+                    //递归
+                    next(pdata[i].elements);
+                }else{
+                    var element = pdata[i];
+                    if(element.tag == tagId){
+                        foundArr.push(element)
+                    }
+                }
+
+            }
+        }
+        next(data);
+        return foundArr;
+    };
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -9047,7 +9073,7 @@ AnimationItem.prototype.setParams = function(params) {
     }
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
-
+    this.thumbMode = params.thumbMode?params.thumbMode:false;
     if(params.loop === '' || params.loop === null){
     }else if(params.loop === false){
         this.loop = false;
@@ -9329,6 +9355,32 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
     this.play();
 };
 
+AnimationItem.prototype.updateData = function(changeData){
+    changeData={
+        tag:'comp_0-1',
+        value:'下\r雪\r了',
+        type:"text"
+    }
+   var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
+    var value2update = null;
+    if(changeData.type=='text'){
+        value2update = {t:changeData.value};
+    }
+    findElements.forEach(function (element){
+        if(changeData.type=='text'){
+            element.updateDocumentData(value2update,0);
+        }
+    })
+    this.renderer.renderFrame(this.currentFrame,true);
+   //  let changeData = JSON.parse(JSON.stringify(res.data));
+   //  changeData.refId="image_3"
+   //   // new IImageElement(changeData,this.renderer.globalData,this.renderer);
+   //  res.assetData = this.renderer.globalData.getAssetData(changeData.refId);
+   //  res.initElement(data,this.renderer.globalData,this.renderer);
+   //  res.sourceRect = {top:0,left:0,width:res.assetData.w,height:res.assetData.h};
+   //  window.ele = res;
+
+}
 AnimationItem.prototype.advanceTime = function (value) {
     if (this.isPaused === true || this.isLoaded === false) {
         return;

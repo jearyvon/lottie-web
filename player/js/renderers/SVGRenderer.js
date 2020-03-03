@@ -204,7 +204,7 @@ SVGRenderer.prototype.checkPendingElements  = function(){
 
 SVGRenderer.prototype.renderFrame = function(num,update){
     if(update){
-        this.renderedFrame = 0;
+        this.renderedFrame = -1;
     }
     if(this.renderedFrame === num || this.destroyed){
         return;
@@ -224,6 +224,7 @@ SVGRenderer.prototype.renderFrame = function(num,update){
     if(!this.completeLayers){
 
         this.checkLayers(num);
+
     }
     for (i = len - 1; i >= 0; i--) {
         if(this.completeLayers || this.elements[i]){

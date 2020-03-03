@@ -2,7 +2,7 @@ function RenderableDOMElement() {}
 
 (function(){
     var _prototype = {
-        initElement: function(data,globalData,comp,tag) {
+        initElement: function(data,globalData,comp) {
             this.initFrame();
             this.initBaseData(data, globalData, comp);
             this.initTransform(data, globalData, comp);
@@ -37,10 +37,10 @@ function RenderableDOMElement() {}
             if (this.data.hd || this.hidden) {
                 return;
             }
-            this.renderTransform();
-            this.renderRenderable();
-            this.renderElement();
-            this.renderInnerContent();
+            this.renderTransform(); //渲染位移相关
+            this.renderRenderable();//渲染遮罩和特效相关
+            this.renderElement(); //应用位移和透明度变化
+            this.renderInnerContent();//无
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
             }

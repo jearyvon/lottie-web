@@ -27,6 +27,25 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this._findNextElement = function(data, tagId){
+        var foundArr = [];
+        function next(pdata)  {
+            for(var i =0;i < pdata.length; i++){
+                if(pdata[i].elements && pdata[i].elements.length > 0){
+                    //递归
+                    next(pdata[i].elements);
+                }else{
+                    var element = pdata[i];
+                    if(element.tag == tagId){
+                        foundArr.push(element)
+                    }
+                }
+
+            }
+        }
+        next(data);
+        return foundArr;
+    };
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -333,8 +352,32 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
     this.goToAndStop(value, isFrame, name);
     this.play();
 };
-AnimationItem.prototype.updateData = function(data,frame){
-    this.setCurrentRawFrameValue(frame);
+
+AnimationItem.prototype.updateData = function(changeData){
+    // changeData={
+    //     tag:'comp_0-1',
+    //     value:'下\r雪\r了',
+    //     type:"text"
+    // }
+   var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
+    var value2update = null;
+    if(changeData.type=='text'){
+        value2update = {t:changeData.value};
+    }
+    findElements.forEach(function (element){
+        if(changeData.type=='text'){
+            element.updateDocumentData(value2update,0);
+        }
+    })
+    this.renderer.renderFrame(this.currentFrame,true);
+   //  let changeData = JSON.parse(JSON.stringify(res.data));
+   //  changeData.refId="image_3"
+   //   // new IImageElement(changeData,this.renderer.globalData,this.renderer);
+   //  res.assetData = this.renderer.globalData.getAssetData(changeData.refId);
+   //  res.initElement(data,this.renderer.globalData,this.renderer);
+   //  res.sourceRect = {top:0,left:0,width:res.assetData.w,height:res.assetData.h};
+   //  window.ele = res;
+
 }
 AnimationItem.prototype.advanceTime = function (value) {
     if (this.isPaused === true || this.isLoaded === false) {
