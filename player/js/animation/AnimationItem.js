@@ -359,7 +359,7 @@ AnimationItem.prototype.updateData = function(changeData){
     //     value:'下\r雪\r了',
     //     type:"text"
     // }
-   var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
+   var findElements =  this._findNextElement( this.renderer.elements, changeData.tag);
     var value2update = null;
     if(changeData.type=='text'){
         value2update = {t:changeData.value};
