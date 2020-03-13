@@ -190,11 +190,11 @@
             imagePreserveAspectRatio: 'xMidYMid meet',
             id:"svgg"
         },
-        path: './data/data.json'
+        path: './data/1.json'
     };
     // lottie.setQuality('low');
     window.anim = anim = lottie.loadAnimation(animData);
-    // anim.goToAndStop(100,true);
+    anim.goToAndStop(254,true);
     document.getElementById("scroll").addEventListener("change",(e)=>{
         let value = e.target.value;
         console.log(value)
@@ -225,13 +225,17 @@
 
     document.getElementById("btn").addEventListener("click",(e)=>{
         console.log(anim)
-      anim.animationData.assets[14].layers[0].t.d.k[0].s.t="过\r年\r好";
-      anim.renderer.globalData.changedTags=['comp_0-1'];
-      anim.renderer.globalData.changedValue={"comp_0-1":{t:"过\r年\r好"}};
-        // anim.updateData({'comp_0-1':1})
-      anim.renderer.renderFrame(2,true);
-      anim.renderer.globalData.changedTags =[];
-      anim.renderer.globalData.changedValue={};
+      // anim.animationData.assets[14].layers[0].t.d.k[0].s.t="过\r年\r好";
+      // anim.renderer.globalData.changedTags=['comp_0-1'];
+      // anim.renderer.globalData.changedValue={"comp_0-1":{t:"过\r年\r好"}};
+      //   // anim.updateData({'comp_0-1':1})
+      // https://video-pub-cdn-oss.chuangkit.com/video_material/2020/03/12/1870c3a2-82c1-4a1c-9b66-790dd5d1a37b
+      anim.animationData.assets[9].src = 'https://video-pub-cdn-oss.chuangkit.com/video_material/2020/03/12/1870c3a2-82c1-4a1c-9b66-790dd5d1a37b';
+      anim.animationData.assets[17].layers[0].ks.p.k =[0,0,0];
+      anim.animationData.assets[17].layers[0].ks.a.k =[0,0,0];
+      // anim.renderer.elements[5].elements[11].elements[0].tag
+      anim.renderer.renderFrame(254,true);
+
 
     })
     anim.onError = function(errorType, nativeError, errorProps) {

@@ -15,6 +15,9 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
         this.buildAllItems();
     }
     this.hide();
+    if(this.globalData.tags[this.tag]){
+        this.globalData.tags[this.tag].transform = this.finalTransform.mProp
+    }
 };
 
 /*ICompElement.prototype.hide = function(){
@@ -33,7 +36,6 @@ ICompElement.prototype.prepareFrame = function(num){
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
-
     if(!this.isInRange && !this.data.xt){
         return;
     }

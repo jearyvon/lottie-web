@@ -510,7 +510,6 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
 
 SVGTextElement.prototype.buildNewText = function(){
     var i, len;
-
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData ? documentData.l.length : 0);
     if(documentData.fc) {

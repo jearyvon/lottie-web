@@ -5885,6 +5885,9 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.imageLoader = this.animationItem.imagePreloader;
     this.globalData.thumbMode = this.animationItem.thumbMode;
+    this.globalData.tags = this.animationItem.designTags;
+    this.globalData.changedTags =[];
+    this.globalData.changedValue= {};
     this.globalData.frameId = 0;
     this.globalData.frameRate = animData.fr;
     this.globalData.nm = animData.nm;
@@ -6163,7 +6166,6 @@ SVGRenderer.prototype.hide = function(){
 SVGRenderer.prototype.show = function(){
     this.layerElement.style.display = 'block';
 };
-
 function MaskElement(data,element,globalData) {
     this.data = data;
     this.element = element;
@@ -6663,6 +6665,7 @@ function RenderableDOMElement() {}
             this.createRenderableComponents();
             this.createContent();
             this.hide();
+
         },
         hide: function(){
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
@@ -6687,13 +6690,14 @@ function RenderableDOMElement() {}
             if (this.data.hd || this.hidden) {
                 return;
             }
-            this.renderTransform();
-            this.renderRenderable();
-            this.renderElement();
-            this.renderInnerContent();
+            this.renderTransform(); //渲染位移相关
+            this.renderRenderable();//渲染遮罩和特效相关
+            this.renderElement(); //应用位移和透明度变化
+            this.renderInnerContent();//无
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
             }
+
         },
         renderInnerContent: function() {},
         prepareFrame: function(num) {
@@ -7461,6 +7465,7 @@ function ITextElement(){
 }
 
 ITextElement.prototype.initElement = function(data,globalData,comp){
+
     this.lettersChangedFlag = true;
     this.initFrame();
     this.initBaseData(data, globalData, comp);
@@ -7554,6 +7559,9 @@ ICompElement.prototype.initElement = function(data,globalData,comp) {
         this.buildAllItems();
     }
     this.hide();
+    if(this.globalData.tags[this.tag]){
+        this.globalData.tags[this.tag].transform = this.finalTransform.mProp
+    }
 };
 
 /*ICompElement.prototype.hide = function(){
@@ -7572,7 +7580,6 @@ ICompElement.prototype.prepareFrame = function(num){
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
-
     if(!this.isInRange && !this.data.xt){
         return;
     }
@@ -7633,9 +7640,22 @@ ICompElement.prototype.destroy = function(){
 };
 
 function IImageElement(data,globalData,comp){
+
     this.assetData = globalData.getAssetData(data.refId);
+    this.thumbMode = globalData.thumbMode;
     this.initElement(data,globalData,comp);
     this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
+
+    if(this.globalData.tags['imagesTags']&&this.globalData.tags['imagesTags'][this.tag]){
+
+        if(!this.globalData.tags['imagesTags'][this.tag].kdata){
+            this.globalData.tags[this.comp.tag].kdata = {
+                transform:this.finalTransform.mProp,
+                rect:this.sourceRect
+            };
+        }
+    }
+
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
@@ -7725,7 +7745,6 @@ SVGTextElement.prototype.buildTextContents = function(textArray) {
 
 SVGTextElement.prototype.buildNewText = function(){
     var i, len;
-
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData ? documentData.l.length : 0);
     if(documentData.fc) {
@@ -9029,6 +9048,7 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this.designTags = {};
     this._findNextElement = function(data, tagId){
         var foundArr = [];
         function next(pdata)  {
@@ -9056,6 +9076,7 @@ AnimationItem.prototype.setParams = function(params) {
     if(params.context){
         this.context = params.context;
     }
+    this.designTags = params.tags?params.tags:{};
     if(params.wrapper || params.container){
         this.wrapper = params.wrapper || params.container;
     }
@@ -9356,11 +9377,11 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.updateData = function(changeData){
-    changeData={
-        tag:'comp_0-1',
-        value:'下\r雪\r了',
-        type:"text"
-    }
+    // changeData={
+    //     tag:'comp_0-1',
+    //     value:'下\r雪\r了',
+    //     type:"text"
+    // }
    var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
     var value2update = null;
     if(changeData.type=='text'){

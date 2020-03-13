@@ -13,6 +13,7 @@ function RenderableDOMElement() {}
             this.createRenderableComponents();
             this.createContent();
             this.hide();
+
         },
         hide: function(){
             if (!this.hidden && (!this.isInRange || this.isTransparent)) {
@@ -44,6 +45,8 @@ function RenderableDOMElement() {}
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
             }
+            this.updateContent&&this.updateContent();
+
         },
         renderInnerContent: function() {},
         prepareFrame: function(num) {
@@ -51,6 +54,7 @@ function RenderableDOMElement() {}
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
+            this.checkUpdate&&this.checkUpdate();
         },
         destroy: function(){
             this.innerElem =  null;

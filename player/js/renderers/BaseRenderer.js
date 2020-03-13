@@ -119,6 +119,7 @@ BaseRenderer.prototype.setupGlobalData = function(animData, fontsContainer) {
     this.globalData.getAssetsPath = this.animationItem.getAssetsPath.bind(this.animationItem);
     this.globalData.imageLoader = this.animationItem.imagePreloader;
     this.globalData.thumbMode = this.animationItem.thumbMode;
+    this.globalData.tags = this.animationItem.designTags;
     this.globalData.changedTags =[];
     this.globalData.changedValue= {};
     this.globalData.frameId = 0;

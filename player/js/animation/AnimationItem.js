@@ -27,6 +27,7 @@ var AnimationItem = function () {
     this._completedLoop = false;
     this.projectInterface = ProjectInterface();
     this.imagePreloader = new ImagePreloader();
+    this.designTags = {};
     this._findNextElement = function(data, tagId){
         var foundArr = [];
         function next(pdata)  {
@@ -54,6 +55,7 @@ AnimationItem.prototype.setParams = function(params) {
     if(params.context){
         this.context = params.context;
     }
+    this.designTags = params.tags?params.tags:{};
     if(params.wrapper || params.container){
         this.wrapper = params.wrapper || params.container;
     }
@@ -354,12 +356,7 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.updateData = function(changeData){
-    // changeData={
-    //     tag:'comp_0-1',
-    //     value:'下\r雪\r了',
-    //     type:"text"
-    // }
-   var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
+   var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
     var value2update = null;
     if(changeData.type=='text'){
         value2update = {t:changeData.value};
