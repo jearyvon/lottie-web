@@ -33,6 +33,9 @@ BaseRenderer.prototype.createItem = function(layer){
         case 13:
             return this.createCamera(layer);
     }
+    if(layer.ty==9&&layer.refId){
+        return this.createImage(layer);
+    }
     return this.createNull(layer);
 };
 

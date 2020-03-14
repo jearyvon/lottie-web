@@ -2,6 +2,9 @@ function SVGTextElement(data,globalData,comp){
     this.textSpans = [];
     this.renderType = 'svg';
     this.initElement(data,globalData,comp);
+    if(this.globalData.tags[this.tag]){
+        this.globalData.tags[this.tag].transform = this.finalTransform.mProp
+    }
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
