@@ -129,10 +129,6 @@ SVGBaseElement.prototype = {
         }
     },
     renderElement: function() {
-        if(this.tag=="comp_7-1"){
-            console.log(this.finalTransform.mat.to2dCSS());
-            this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
-        }
         if (this.finalTransform._matMdf) {
             // console.log(this.tag);
             this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
