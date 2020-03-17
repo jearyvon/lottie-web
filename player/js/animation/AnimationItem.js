@@ -365,16 +365,14 @@ AnimationItem.prototype.updateData = function(changeData){
         if(changeData.type=='text'){
             element.updateDocumentData(value2update,0);
         }
+        if(changeData.type=='img'){
+            element._mdfks = true;
+            var data = changeData.value ;
+            console.log(data);
+            // element.data.ks
+        }
     })
     this.renderer.renderFrame(this.currentFrame,true);
-   //  let changeData = JSON.parse(JSON.stringify(res.data));
-   //  changeData.refId="image_3"
-   //   // new IImageElement(changeData,this.renderer.globalData,this.renderer);
-   //  res.assetData = this.renderer.globalData.getAssetData(changeData.refId);
-   //  res.initElement(data,this.renderer.globalData,this.renderer);
-   //  res.sourceRect = {top:0,left:0,width:res.assetData.w,height:res.assetData.h};
-   //  window.ele = res;
-
 }
 AnimationItem.prototype.advanceTime = function (value) {
     if (this.isPaused === true || this.isLoaded === false) {

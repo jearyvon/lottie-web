@@ -5799,6 +5799,9 @@ BaseRenderer.prototype.createItem = function(layer){
         case 13:
             return this.createCamera(layer);
     }
+    if(layer.ty==9&&layer.refId){
+        return this.createImage(layer);
+    }
     return this.createNull(layer);
 };
 
@@ -6482,6 +6485,16 @@ FrameElement.prototype = {
             }
         }
     },
+    prepareTransformChange:function(){
+
+        //暂时只支持2D变形检查
+       if(this._mdfks){
+           this.initTransform(this.data,this.globalData,this.comp);
+           this.globalData._mdf = true;
+           this.finalTransform._matMdf = true;
+           this._mdf = true;
+       }
+    },
     addDynamicProperty: function(prop) {
         if(this.dynamicProperties.indexOf(prop) === -1) {
             this.dynamicProperties.push(prop);
@@ -6511,7 +6524,6 @@ TransformElement.prototype = {
 
         this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
         this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
-
         if (this.hierarchy) {
             var mat;
             var finalMat = this.finalTransform.mat;
@@ -6535,6 +6547,14 @@ TransformElement.prototype = {
                     finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
                 }
             }
+        }
+        if(this._mdfks){
+            var mat = this.finalTransform.mProp.v.props;
+            var finalMat = this.finalTransform.mat;
+            this.finalTransform._matMdf = true;
+            finalMat.cloneFromProps(mat);
+            finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
+            this._mdfks = false;
         }
     },
     globalToLocal: function(pt) {
@@ -6697,6 +6717,7 @@ function RenderableDOMElement() {}
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
             }
+            this.updateContent&&this.updateContent();
 
         },
         renderInnerContent: function() {},
@@ -6705,6 +6726,8 @@ function RenderableDOMElement() {}
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
+            this.prepareTransformChange();
+            this.checkUpdate&&this.checkUpdate();
         },
         destroy: function(){
             this.innerElem =  null;
@@ -7362,6 +7385,7 @@ SVGBaseElement.prototype = {
     },
     renderElement: function() {
         if (this.finalTransform._matMdf) {
+            // console.log(this.tag);
             this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
         }
         if (this.finalTransform._opMdf) {
@@ -7643,19 +7667,16 @@ function IImageElement(data,globalData,comp){
 
     this.assetData = globalData.getAssetData(data.refId);
     this.thumbMode = globalData.thumbMode;
+    this.imgUrl = '';
     this.initElement(data,globalData,comp);
     this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
 
     if(this.globalData.tags['imagesTags']&&this.globalData.tags['imagesTags'][this.tag]){
-
-        if(!this.globalData.tags['imagesTags'][this.tag].kdata){
-            this.globalData.tags[this.comp.tag].kdata = {
-                transform:this.finalTransform.mProp,
-                rect:this.sourceRect
+        if(!this.globalData.tags['imagesTags'][this.tag].transform){
+                this.globalData.tags[this.comp.tag].transform = this.finalTransform.mProp;
+                this.globalData.tags[this.comp.tag].rect = this.sourceRect;
             };
         }
-    }
-
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
@@ -7670,6 +7691,7 @@ IImageElement.prototype.createContent = function(){
     if(this.thumbMode){
         assetPath = this.assetData.base64;
     }
+    this.imgUrl = assetPath;
     this.innerElem = createNS('image');
     this.innerElem.setAttribute('width',this.assetData.w+"px");
     this.innerElem.setAttribute('height',this.assetData.h+"px");
@@ -7679,7 +7701,50 @@ IImageElement.prototype.createContent = function(){
     this.layerElement.appendChild(this.innerElem);
 
 };
+IImageElement.prototype.checkUpdate = function() {
+    var assetPath ='';
+    if(this.assetData.src){
+        assetPath = this.assetData.src;
+    }else{
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+    }
+    if(this.thumbMode){
+        assetPath = this.assetData.base64;
+    }
+    //因为资源是引用类型变动的时候可能会边。
+    if(this.sourceRect.width==this.assetData.w &&this.sourceRect.height == this.assetData.h && this.imgUrl == assetPath){
+        return false;
+    }else{
+        this._mdf = true;
+        this.finalTransform._matMdf = true;
+        this.finalTransform.mProp._mdf = true;
+        this.finalTransform.mProp._isDirty = true;
+        this.finalTransform.mProp.getValue();
+        console.log(this.finalTransform.mProp)
+    }
+}
 
+IImageElement.prototype.updateContent = function(){
+    var assetPath ='';
+    if(this.assetData.src){
+        assetPath = this.assetData.src;
+    }else{
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+    }
+    if(this.thumbMode){
+        assetPath = this.assetData.base64;
+    }
+
+    this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
+    this.imgUrl = assetPath;
+    this.innerElem.setAttribute('width',this.assetData.w+"px");
+    this.innerElem.setAttribute('height',this.assetData.h+"px");
+    this.innerElem.setAttribute('preserveAspectRatio',this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio);
+    this.innerElem.setAttributeNS('http://www.w3.org/1999/xlink','href',assetPath);
+    this.innerElem.setAttribute('class',this.assetData.id);
+
+
+}
 IImageElement.prototype.sourceRectAtTime = function() {
 	return this.sourceRect;
 }
@@ -7716,6 +7781,9 @@ function SVGTextElement(data,globalData,comp){
     this.textSpans = [];
     this.renderType = 'svg';
     this.initElement(data,globalData,comp);
+    if(this.globalData.tags[this.tag]){
+        this.globalData.tags[this.tag].transform = this.finalTransform.mProp
+    }
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement,ITextElement], SVGTextElement);
@@ -9377,12 +9445,7 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.updateData = function(changeData){
-    // changeData={
-    //     tag:'comp_0-1',
-    //     value:'下\r雪\r了',
-    //     type:"text"
-    // }
-   var findElements =  this._findNextElement({data: this.renderer.elements, tagId: changeData.tag});
+   var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
     var value2update = null;
     if(changeData.type=='text'){
         value2update = {t:changeData.value};
@@ -9391,16 +9454,14 @@ AnimationItem.prototype.updateData = function(changeData){
         if(changeData.type=='text'){
             element.updateDocumentData(value2update,0);
         }
+        if(changeData.type=='img'){
+            element._mdfks = true;
+            var data = changeData.value ;
+            console.log(data);
+            // element.data.ks
+        }
     })
     this.renderer.renderFrame(this.currentFrame,true);
-   //  let changeData = JSON.parse(JSON.stringify(res.data));
-   //  changeData.refId="image_3"
-   //   // new IImageElement(changeData,this.renderer.globalData,this.renderer);
-   //  res.assetData = this.renderer.globalData.getAssetData(changeData.refId);
-   //  res.initElement(data,this.renderer.globalData,this.renderer);
-   //  res.sourceRect = {top:0,left:0,width:res.assetData.w,height:res.assetData.h};
-   //  window.ele = res;
-
 }
 AnimationItem.prototype.advanceTime = function (value) {
     if (this.isPaused === true || this.isLoaded === false) {

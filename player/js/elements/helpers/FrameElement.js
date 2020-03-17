@@ -43,6 +43,16 @@ FrameElement.prototype = {
             }
         }
     },
+    prepareTransformChange:function(){
+
+        //暂时只支持2D变形检查
+       if(this._mdfks){
+           this.initTransform(this.data,this.globalData,this.comp);
+           this.globalData._mdf = true;
+           this.finalTransform._matMdf = true;
+           this._mdf = true;
+       }
+    },
     addDynamicProperty: function(prop) {
         if(this.dynamicProperties.indexOf(prop) === -1) {
             this.dynamicProperties.push(prop);

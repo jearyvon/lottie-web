@@ -21,7 +21,6 @@ TransformElement.prototype = {
 
         this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
         this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
-
         if (this.hierarchy) {
             var mat;
             var finalMat = this.finalTransform.mat;
@@ -45,6 +44,14 @@ TransformElement.prototype = {
                     finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
                 }
             }
+        }
+        if(this._mdfks){
+            var mat = this.finalTransform.mProp.v.props;
+            var finalMat = this.finalTransform.mat;
+            this.finalTransform._matMdf = true;
+            finalMat.cloneFromProps(mat);
+            finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
+            this._mdfks = false;
         }
     },
     globalToLocal: function(pt) {

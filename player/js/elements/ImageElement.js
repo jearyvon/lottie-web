@@ -8,11 +8,9 @@ function IImageElement(data,globalData,comp){
 
     if(this.globalData.tags['imagesTags']&&this.globalData.tags['imagesTags'][this.tag]){
 
-        if(!this.globalData.tags['imagesTags'][this.tag].kdata){
-            this.globalData.tags[this.comp.tag].kdata = {
-                transform:this.finalTransform.mProp,
-                rect:this.sourceRect
-            };
+        if(!this.globalData.tags['imagesTags'][this.tag].transform){
+            this.globalData.tags['imagesTags'][this.tag].transform =this.finalTransform.mProp;
+            this.globalData.tags['imagesTags'][this.tag].rect =this.sourceRect;
         }
     }
 
@@ -52,11 +50,8 @@ IImageElement.prototype.checkUpdate = function() {
     }
     //因为资源是引用类型变动的时候可能会边。
     if(this.sourceRect.width==this.assetData.w &&this.sourceRect.height == this.assetData.h && this.imgUrl == assetPath){
-        // this._mdf = false;
         return false;
     }else{
-        // console.log(this.sourceRect.width==this.assetData.w ,this.sourceRect.height == this.assetData.h , this.imgUrl == assetPath)
-        console.log("判定有改动")
         this._mdf = true;
         this.finalTransform._matMdf = true;
         this.finalTransform.mProp._mdf = true;
