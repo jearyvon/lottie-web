@@ -1,19 +1,19 @@
 function TextProperty(elem, data){
-	this._frameId = initialDefaultFrame;
-	this.pv = '';
-	this.v = '';
-	this.kf = false;
-	this._isFirstFrame = true;
-	this._mdf = false;
+    this._frameId = initialDefaultFrame;
+    this.pv = '';
+    this.v = '';
+    this.kf = false;
+    this._isFirstFrame = true;
+    this._mdf = false;
     this.data = data;
-	this.elem = elem;
+    this.elem = elem;
     this.comp = this.elem.comp;
-	this.keysIndex = 0;
+    this.keysIndex = 0;
     this.canResize = false;
     this.minimumFontSize = 1;
     this.effectsSequence = [];
-	this.currentData = {
-		ascent: 0,
+    this.currentData = {
+        ascent: 0,
         boxWidth: this.defaultBoxWidth,
         f: '',
         fStyle: '',
@@ -42,7 +42,7 @@ function TextProperty(elem, data){
         finalLineHeight: 0,
         __complete: false
 
-	};
+    };
     this.copyData(this.currentData, this.data.d.k[0].s);
 
     if(!this.searchProperty()) {
@@ -83,7 +83,7 @@ TextProperty.prototype.searchKeyframes = function() {
 }
 
 TextProperty.prototype.addEffect = function(effectFunction) {
-	this.effectsSequence.push(effectFunction);
+    this.effectsSequence.push(effectFunction);
     this.elem.addDynamicProperty(this);
 };
 
@@ -186,25 +186,25 @@ TextProperty.prototype.completeTextData = function(documentData) {
         styleName = styles[i].toLowerCase();
         switch(styleName) {
             case 'italic':
-            fStyle = 'italic';
-            break;
+                fStyle = 'italic';
+                break;
             case 'bold':
-            fWeight = '700';
-            break;
+                fWeight = '700';
+                break;
             case 'black':
-            fWeight = '900';
-            break;
+                fWeight = '900';
+                break;
             case 'medium':
-            fWeight = '500';
-            break;
+                fWeight = '500';
+                break;
             case 'regular':
             case 'normal':
-            fWeight = '400';
-            break;
+                fWeight = '400';
+                break;
             case 'light':
             case 'thin':
-            fWeight = '200';
-            break;
+                fWeight = '200';
+                break;
         }
     }
     documentData.fWeight = fontData.fWeight || fWeight;
@@ -280,9 +280,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         newLineFlag = false;
         currentChar = documentData.finalText[i];
         charCode = currentChar.charCodeAt(0);
-        if (currentChar === ' '){
-            val = '\u00A0';
-        } else if (charCode === 13 || charCode === 3) {
+        if (charCode === 13 || charCode === 3) {
             uncollapsedSpaces = 0;
             lineWidths.push(lineWidth);
             maxLineWidth = lineWidth > maxLineWidth ? lineWidth : maxLineWidth;
@@ -291,7 +289,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
             newLineFlag = true;
             currentLine += 1;
         }else{
-            val = documentData.finalText[i];
+            val = currentChar;
         }
         if(fontManager.chars){
             charData = fontManager.getCharData(currentChar, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
@@ -299,9 +297,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
         }else{
             //var charWidth = fontManager.measureText(val, documentData.f, documentData.finalSize);
             //tCanvasHelper.font = documentData.finalSize + 'px '+ fontManager.getFontByName(documentData.f).fFamily;
-            cLength = documentData.finalSize;
+            cLength = fontManager.measureText(val, documentData.f, documentData.finalSize);
         }
-
 
         //
         if(currentChar === ' '){
@@ -313,8 +310,8 @@ TextProperty.prototype.completeTextData = function(documentData) {
         letters.push({l:cLength,an:cLength,add:currentSize,n:newLineFlag, anIndexes:[], val: val, line: currentLine, animatorJustifyOffset: 0});
         if(anchorGrouping == 2){
             currentSize += cLength;
-            if(val === '' || val === '\u00A0' || i === len - 1){
-                if(val === '' || val === '\u00A0'){
+            if(val === '' || val === ' ' || i === len - 1){
+                if(val === '' || val === ' '){
                     currentSize -= cLength;
                 }
                 while(currentPos<=i){
@@ -387,7 +384,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
         for(i=0;i<len;i+=1){
             letterData = letters[i];
             letterData.anIndexes[j] = ind;
-            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== '\u00A0') || (based == 3 && (letterData.n || letterData.val == '\u00A0' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
+            if((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))){
                 if(animatorData.s.rn === 1){
                     indexes.push(ind);
                 }
@@ -413,7 +410,7 @@ TextProperty.prototype.completeTextData = function(documentData) {
 };
 
 TextProperty.prototype.updateDocumentData = function(newData, index) {
-	index = index === undefined ? this.keysIndex : index;
+    index = index === undefined ? this.keysIndex : index;
     var dData = this.copyData({}, this.data.d.k[index].s);
     dData = this.copyData(dData, newData);
     this.data.d.k[index].s = dData;

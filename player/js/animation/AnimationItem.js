@@ -5,6 +5,7 @@ var AnimationItem = function () {
     this.isLoaded = false;
     this.currentFrame = 0;
     this.currentRawFrame = 0;
+    this.firstFrame = 0;
     this.totalFrames = 0;
     this.frameRate = 0;
     this.frameMult = 0;

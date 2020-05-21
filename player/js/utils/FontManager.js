@@ -12,6 +12,18 @@ var FontManager = (function(){
     , 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379
     , 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
+    function trimFontOptions(font) {
+        var familyArray = font.split(',');
+        var i, len = familyArray.length;
+        var enabledFamilies = [];
+        for (i = 0; i < len; i += 1) {
+            if (familyArray[i] !== 'sans-serif' && familyArray[i] !== 'monospace') {
+                enabledFamilies.push(familyArray[i]);
+            }
+        }
+        return enabledFamilies.join(',');
+    }
+
     function setUpNode(font, family){
         var parentNode = createTag('span');
         parentNode.style.fontFamily    = family;
@@ -34,7 +46,7 @@ var FontManager = (function(){
 
         // Remember width with no applied web font
         var width = node.offsetWidth;
-        node.style.fontFamily = font + ', '+family;
+        node.style.fontFamily = trimFontOptions(font) + ', ' + family;
         return {node:node, w:width, parent:parentNode};
     }
 
@@ -71,34 +83,33 @@ var FontManager = (function(){
         }
 
         if(loadedCount !== 0 && Date.now() - this.initTime < maxWaitingTime){
-            setTimeout(this.checkLoadedFonts.bind(this),20);
+            setTimeout(this.checkLoadedFontsBinded, 20);
         }else{
-            // setTimeout(function(){this.isLoaded = true;}.bind(this),0);
-            this.isLoaded = true;
+            setTimeout(this.setIsLoadedBinded, 10);
         }
 
     }
 
     function createHelper(def, fontData){
-        // var tHelper = createNS('text');
-        // tHelper.style.fontSize = '100px';
-        // //tHelper.style.fontFamily = fontData.fFamily;
-        // tHelper.setAttribute('font-family', fontData.fFamily);
-        // tHelper.setAttribute('font-style', fontData.fStyle);
-        // tHelper.setAttribute('font-weight', fontData.fWeight);
-        // tHelper.textContent = '1';
-        // if(fontData.fClass){
-        //     tHelper.style.fontFamily = 'inherit';
-        //     tHelper.setAttribute('class', fontData.fClass);
-        // } else {
-        //     tHelper.style.fontFamily = fontData.fFamily;
-        // }
-        // def.appendChild(tHelper);
-        // // var tCanvasHelper = createTag('canvas').getContext('2d');
-        // // tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
-        // // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
-        // return null;
-        return {};
+        var tHelper = createNS('text');
+        tHelper.style.fontSize = '100px';
+        //tHelper.style.fontFamily = fontData.fFamily;
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontData.fStyle);
+        tHelper.setAttribute('font-weight', fontData.fWeight);
+        tHelper.textContent = '1';
+        if(fontData.fClass){
+            tHelper.style.fontFamily = 'inherit';
+            tHelper.setAttribute('class', fontData.fClass);
+        } else {
+            tHelper.style.fontFamily = fontData.fFamily;
+        }
+        def.appendChild(tHelper);
+        var tCanvasHelper = createTag('canvas').getContext('2d');
+        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        return tHelper;
+        // return {};
     }
 
     function addFonts(fontData, defs){
@@ -238,8 +249,8 @@ var FontManager = (function(){
         return combinedCharacters;
     }
 
-    function loaded() {
-        return this.isLoaded;
+    function setIsLoaded() {
+        this.isLoaded = true
     }
 
     var Font = function(){
@@ -248,18 +259,23 @@ var FontManager = (function(){
         this.typekitLoaded = 0;
         this.isLoaded = false;
         this.initTime = Date.now();
+        this.setIsLoadedBinded = this.setIsLoaded.bind(this)
+        this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this)
     };
     //TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it. 
     Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
 
-    Font.prototype.addChars = addChars;
-    Font.prototype.addFonts = addFonts;
-    Font.prototype.getCharData = getCharData;
-    Font.prototype.getFontByName = getFontByName;
-    Font.prototype.measureText = measureText;
-    Font.prototype.checkLoadedFonts = checkLoadedFonts;
-    Font.prototype.loaded = loaded;
+    var fontPrototype = {
+        addChars: addChars,
+        addFonts: addFonts,
+        getCharData: getCharData,
+        getFontByName: getFontByName,
+        measureText: measureText,
+        checkLoadedFonts: checkLoadedFonts,
+        setIsLoaded: setIsLoaded,
+    }
 
+    Font.prototype = fontPrototype;
     return Font;
 
 }());

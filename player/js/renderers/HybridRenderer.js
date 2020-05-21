@@ -5,7 +5,13 @@ function HybridRenderer(animationItem, config){
     this.renderConfig = {
         className: (config && config.className) || '',
         imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
-        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true
+        hideOnTransparent: (config && config.hideOnTransparent === false) ? false : true,
+        filterSize: {
+            width: config && config.filterSize && config.filterSize.width || '400%',
+            height: config && config.filterSize && config.filterSize.height || '400%',
+            x: config && config.filterSize && config.filterSize.x || '-100%',
+            y: config && config.filterSize && config.filterSize.y || '-100%',
+        }
     };
     this.globalData = {
         _mdf: false,
@@ -63,7 +69,7 @@ HybridRenderer.prototype.appendElementInPos = function(element, pos){
                 }
             }
         }
-        
+
     } else {
         this.addTo3dContainer(newDOMElement,pos);
     }
@@ -133,7 +139,7 @@ HybridRenderer.prototype.createThreeDContainer = function(pos, type){
         perspectiveElem.style.transformOrigin = perspectiveElem.style.mozTransformOrigin = perspectiveElem.style.webkitTransformOrigin = "50% 50%";
         container.style.transform = container.style.webkitTransform = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     }
-    
+
     perspectiveElem.appendChild(container);
     //this.resizerElem.appendChild(perspectiveElem);
     var threeDContainerData = {
@@ -204,7 +210,7 @@ HybridRenderer.prototype.configAnimation = function(animData){
     styleDiv(resizerElem);
     resizerElem.style.transformStyle = resizerElem.style.webkitTransformStyle = resizerElem.style.mozTransformStyle = "flat";
     if(this.renderConfig.className) {
-      resizerElem.setAttribute('class', this.renderConfig.className);
+        resizerElem.setAttribute('class', this.renderConfig.className);
     }
     wrapper.appendChild(resizerElem);
 
