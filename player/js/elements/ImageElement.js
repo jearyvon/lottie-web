@@ -19,11 +19,13 @@ function IImageElement(data,globalData,comp){
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function(){
+    this._imageMdf=false;
     var assetPath ='';
-    if(!this.assetData.src){
-        assetPath = this.globalData.getAssetsPath(this.assetData);
-    }else{
+    if(this.assetData.src){
         assetPath = this.assetData.src;
+    }else{
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+
     }
     if(this.thumbMode){
         assetPath = this.assetData.base64;
@@ -39,6 +41,7 @@ IImageElement.prototype.createContent = function(){
 
 };
 IImageElement.prototype.checkUpdate = function() {
+    if(!this.assetData) return ;
     var assetPath ='';
     if(this.assetData.src){
         assetPath = this.assetData.src;
@@ -53,15 +56,12 @@ IImageElement.prototype.checkUpdate = function() {
         return false;
     }else{
         this._mdf = true;
-        this.finalTransform._matMdf = true;
-        this.finalTransform.mProp._mdf = true;
-        this.finalTransform.mProp._isDirty = true;
-        this.finalTransform.mProp.getValue();
-        console.log(this.finalTransform.mProp)
+        this._imageMdf = true;
     }
 }
 
 IImageElement.prototype.updateContent = function(){
+    if(!this._imageMdf||!this.thumbMode) return;
     var assetPath ='';
     if(this.assetData.src){
         assetPath = this.assetData.src;

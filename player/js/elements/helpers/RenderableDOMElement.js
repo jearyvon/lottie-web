@@ -44,8 +44,10 @@ function RenderableDOMElement() {}
             this.renderInnerContent();//无
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
+            }else{
+                this.updateContent&&this.updateContent();
             }
-            this.updateContent&&this.updateContent();
+
 
         },
         renderInnerContent: function() {},
@@ -54,8 +56,10 @@ function RenderableDOMElement() {}
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
-            this.prepareTransformChange();
-            this.checkUpdate&&this.checkUpdate();
+            if(!this._isFirstFrame){
+                this.prepareTransformChange();
+                this.checkUpdate&&this.checkUpdate();
+            }
         },
         destroy: function(){
             this.innerElem =  null;

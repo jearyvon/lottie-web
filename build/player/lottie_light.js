@@ -6489,7 +6489,7 @@ FrameElement.prototype = {
 
         //暂时只支持2D变形检查
        if(this._mdfks){
-           this.initTransform(this.data,this.globalData,this.comp);
+           this.initTransform();
            this.globalData._mdf = true;
            this.finalTransform._matMdf = true;
            this._mdf = true;
@@ -6549,11 +6549,8 @@ TransformElement.prototype = {
             }
         }
         if(this._mdfks){
-            var mat = this.finalTransform.mProp.v.props;
-            var finalMat = this.finalTransform.mat;
             this.finalTransform._matMdf = true;
-            finalMat.cloneFromProps(mat);
-            finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
+            this.finalTransform.mat = this.finalTransform.mProp.v;
             this._mdfks = false;
         }
     },
@@ -6716,8 +6713,10 @@ function RenderableDOMElement() {}
             this.renderInnerContent();//无
             if (this._isFirstFrame) {
                 this._isFirstFrame = false;
+            }else{
+                this.updateContent&&this.updateContent();
             }
-            this.updateContent&&this.updateContent();
+
 
         },
         renderInnerContent: function() {},
@@ -6726,8 +6725,10 @@ function RenderableDOMElement() {}
             this.prepareRenderableFrame(num);
             this.prepareProperties(num, this.isInRange);
             this.checkTransparency();
-            this.prepareTransformChange();
-            this.checkUpdate&&this.checkUpdate();
+            if(!this._isFirstFrame){
+                this.prepareTransformChange();
+                this.checkUpdate&&this.checkUpdate();
+            }
         },
         destroy: function(){
             this.innerElem =  null;
@@ -7672,21 +7673,25 @@ function IImageElement(data,globalData,comp){
     this.sourceRect = {top:0,left:0,width:this.assetData.w,height:this.assetData.h};
 
     if(this.globalData.tags['imagesTags']&&this.globalData.tags['imagesTags'][this.tag]){
+
         if(!this.globalData.tags['imagesTags'][this.tag].transform){
-                this.globalData.tags[this.comp.tag].transform = this.finalTransform.mProp;
-                this.globalData.tags[this.comp.tag].rect = this.sourceRect;
-            };
+            this.globalData.tags['imagesTags'][this.tag].transform =this.finalTransform.mProp;
+            this.globalData.tags['imagesTags'][this.tag].rect =this.sourceRect;
         }
+    }
+
 }
 
 extendPrototype([BaseElement,TransformElement,SVGBaseElement,HierarchyElement,FrameElement,RenderableDOMElement], IImageElement);
 
 IImageElement.prototype.createContent = function(){
+    this._imageMdf=false;
     var assetPath ='';
-    if(!this.assetData.src){
-        assetPath = this.globalData.getAssetsPath(this.assetData);
-    }else{
+    if(this.assetData.src){
         assetPath = this.assetData.src;
+    }else{
+        assetPath = this.globalData.getAssetsPath(this.assetData);
+
     }
     if(this.thumbMode){
         assetPath = this.assetData.base64;
@@ -7702,6 +7707,7 @@ IImageElement.prototype.createContent = function(){
 
 };
 IImageElement.prototype.checkUpdate = function() {
+    if(!this.assetData) return ;
     var assetPath ='';
     if(this.assetData.src){
         assetPath = this.assetData.src;
@@ -7716,15 +7722,12 @@ IImageElement.prototype.checkUpdate = function() {
         return false;
     }else{
         this._mdf = true;
-        this.finalTransform._matMdf = true;
-        this.finalTransform.mProp._mdf = true;
-        this.finalTransform.mProp._isDirty = true;
-        this.finalTransform.mProp.getValue();
-        console.log(this.finalTransform.mProp)
+        this._imageMdf = true;
     }
 }
 
 IImageElement.prototype.updateContent = function(){
+    if(!this._imageMdf||!this.thumbMode) return;
     var assetPath ='';
     if(this.assetData.src){
         assetPath = this.assetData.src;
@@ -9445,22 +9448,32 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.updateData = function(changeData){
-   var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
+
     var value2update = null;
     if(changeData.type=='text'){
         value2update = {t:changeData.value};
     }
-    findElements.forEach(function (element){
-        if(changeData.type=='text'){
+    if(changeData.type=='text'){
+        var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
+        findElements.forEach(function (element){
             element.updateDocumentData(value2update,0);
+        })
+    }
+    if(changeData.type=='img'){
+        var imageCompId = 'comp_' + (changeData.transform.comp);
+        var compId = changeData.tag;
+        if(changeData.transform.comp){
+            var findElements =  this._findNextElement(this.renderer.elements, imageCompId);
+            findElements.forEach(function (element){
+                element._mdfks = true;
+            })
+        }else{
+            var findElements =  this._findNextElement(this.renderer.elements, compId);
+            findElements.forEach(function (element){
+                element._mdfks = true;
+            })
         }
-        if(changeData.type=='img'){
-            element._mdfks = true;
-            var data = changeData.value ;
-            console.log(data);
-            // element.data.ks
-        }
-    })
+    }
     this.renderer.renderFrame(this.currentFrame,true);
 }
 AnimationItem.prototype.advanceTime = function (value) {

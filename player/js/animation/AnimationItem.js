@@ -21,7 +21,7 @@ var AnimationItem = function () {
     this.assetsPath = '';
     this.timeCompleted = 0;
     this.segmentPos = 0;
-    this.subframeEnabled = subframeEnabled;
+    this.isSubframeEnabled = subframeEnabled;
     this.segments = [];
     this._idle = true;
     this._completedLoop = false;
@@ -71,21 +71,26 @@ AnimationItem.prototype.setParams = function(params) {
             this.renderer = new HybridRenderer(this, params.rendererSettings);
             break;
     }
+    this.imagePreloader.setCacheType(animType);
     this.renderer.setProjectInterface(this.projectInterface);
     this.animType = animType;
     this.thumbMode = params.thumbMode?params.thumbMode:false;
-    if(params.loop === '' || params.loop === null){
-    }else if(params.loop === false){
-        this.loop = false;
-    }else if(params.loop === true){
+    if (params.loop === ''
+      || params.loop === null
+      || params.loop === undefined
+      || params.loop === true)
+    {
         this.loop = true;
-    }else{
+    } else if (params.loop === false) {
+        this.loop = false;
+    } else {
         this.loop = parseInt(params.loop);
     }
     this.autoplay = 'autoplay' in params ? params.autoplay : true;
     this.name = params.name ? params.name :  '';
     this.autoloadSegments = params.hasOwnProperty('autoloadSegments') ? params.autoloadSegments :  true;
     this.assetsPath = params.assetsPath;
+    this.initialSegment = params.initialSegment;
     if (params.animationData) {
         this.configAnimation(params.animationData);
     } else if(params.path){
@@ -214,7 +219,13 @@ AnimationItem.prototype.configAnimation = function (animData) {
     }
     try {
         this.animationData = animData;
-        this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+        if (this.initialSegment) {
+            this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
+            this.firstFrame = Math.round(this.initialSegment[0]);
+        } else {
+            this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+            this.firstFrame = Math.round(this.animationData.ip);
+        }
         this.renderer.configAnimation(animData);
         if(!animData.assets){
             animData.assets = [];
@@ -222,7 +233,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
 
         this.assets = this.animationData.assets;
         this.frameRate = this.animationData.fr;
-        this.firstFrame = Math.round(this.animationData.ip);
         this.frameMult = this.animationData.fr / 1000;
         this.renderer.searchExtraCompositions(animData.assets);
         this.trigger('config_ready');
@@ -239,7 +249,7 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
     if(!this.renderer) {
         return;
     }
-    if(this.renderer.globalData.fontManager.loaded()){
+    if(this.renderer.globalData.fontManager.isLoaded){
         this.checkLoaded();
     }else{
         setTimeout(this.waitForFontsLoaded.bind(this),20);
@@ -247,7 +257,10 @@ AnimationItem.prototype.waitForFontsLoaded = function(){
 }
 
 AnimationItem.prototype.checkLoaded = function () {
-    if (!this.isLoaded && this.renderer.globalData.fontManager.loaded() && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')) {
+    if (!this.isLoaded
+      && this.renderer.globalData.fontManager.isLoaded
+      && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+    ) {
         this.isLoaded = true;
         dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
         if(expressionsPlugin){
@@ -269,11 +282,11 @@ AnimationItem.prototype.resize = function () {
 };
 
 AnimationItem.prototype.setSubframe = function(flag){
-    this.subframeEnabled = flag ? true : false;
+    this.isSubframeEnabled = !!flag;
 };
 
 AnimationItem.prototype.gotoFrame = function () {
-    this.currentFrame = this.subframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
+    this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame;
 
     if(this.timeCompleted !== this.totalFrames && this.currentFrame > this.timeCompleted){
         this.currentFrame = this.timeCompleted;
@@ -356,22 +369,32 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.updateData = function(changeData){
-   var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
+
     var value2update = null;
     if(changeData.type=='text'){
         value2update = {t:changeData.value};
     }
-    findElements.forEach(function (element){
-        if(changeData.type=='text'){
+    if(changeData.type=='text'){
+        var findElements =  this._findNextElement(this.renderer.elements, changeData.tag);
+        findElements.forEach(function (element){
             element.updateDocumentData(value2update,0);
+        })
+    }
+    if(changeData.type=='img'){
+        var imageCompId = 'comp_' + (changeData.transform.comp);
+        var compId = changeData.tag;
+        if(changeData.transform.comp){
+            var findElements =  this._findNextElement(this.renderer.elements, imageCompId);
+            findElements.subframeEnabledforEach(function (element){
+                element._mdfks = true;
+            })
+        }else{
+            var findElements =  this._findNextElement(this.renderer.elements, compId);
+            findElements.forEach(function (element){
+                element._mdfks = true;
+            })
         }
-        if(changeData.type=='img'){
-            element._mdfks = true;
-            var data = changeData.value ;
-            console.log(data);
-            // element.data.ks
-        }
-    })
+    }
     this.renderer.renderFrame(this.currentFrame,true);
 }
 AnimationItem.prototype.advanceTime = function (value) {

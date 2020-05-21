@@ -46,11 +46,8 @@ TransformElement.prototype = {
             }
         }
         if(this._mdfks){
-            var mat = this.finalTransform.mProp.v.props;
-            var finalMat = this.finalTransform.mat;
             this.finalTransform._matMdf = true;
-            finalMat.cloneFromProps(mat);
-            finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
+            this.finalTransform.mat = this.finalTransform.mProp.v;
             this._mdfks = false;
         }
     },

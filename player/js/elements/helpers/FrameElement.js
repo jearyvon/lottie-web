@@ -47,7 +47,7 @@ FrameElement.prototype = {
 
         //暂时只支持2D变形检查
        if(this._mdfks){
-           this.initTransform(this.data,this.globalData,this.comp);
+           this.initTransform();
            this.globalData._mdf = true;
            this.finalTransform._matMdf = true;
            this._mdf = true;
