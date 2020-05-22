@@ -222,13 +222,13 @@ var FontManager = (function(){
             //console.log(tHelper.getBBox().width)
             if (char === ' ') {
                 tHelper.textContent = '|' + char + '|';
-                var doubleSize = tHelper.getComputedTextLength();
+                var doubleSize = 1;
                 tHelper.textContent = '||';
-                var singleSize = tHelper.getComputedTextLength();
+                var singleSize = 1;
                 fontData.cache[index + 1] = (doubleSize - singleSize)/100;
             } else {
                 tHelper.textContent = char;
-                fontData.cache[index + 1] = (tHelper.getComputedTextLength())/100;
+                fontData.cache[index + 1] = 1;
             }
         }
         return fontData.cache[index + 1] * size;
