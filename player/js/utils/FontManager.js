@@ -91,25 +91,25 @@ var FontManager = (function(){
     }
 
     function createHelper(def, fontData){
-        var tHelper = createNS('text');
-        tHelper.style.fontSize = '100px';
-        //tHelper.style.fontFamily = fontData.fFamily;
-        tHelper.setAttribute('font-family', fontData.fFamily);
-        tHelper.setAttribute('font-style', fontData.fStyle);
-        tHelper.setAttribute('font-weight', fontData.fWeight);
-        tHelper.textContent = '1';
-        if(fontData.fClass){
-            tHelper.style.fontFamily = 'inherit';
-            tHelper.setAttribute('class', fontData.fClass);
-        } else {
-            tHelper.style.fontFamily = fontData.fFamily;
-        }
-        def.appendChild(tHelper);
-        var tCanvasHelper = createTag('canvas').getContext('2d');
-        tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
-        //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
-        return tHelper;
-        // return {};
+        // var tHelper = createNS('text');
+        // tHelper.style.fontSize = '100px';
+        // //tHelper.style.fontFamily = fontData.fFamily;
+        // tHelper.setAttribute('font-family', fontData.fFamily);
+        // tHelper.setAttribute('font-style', fontData.fStyle);
+        // tHelper.setAttribute('font-weight', fontData.fWeight);
+        // tHelper.textContent = '1';
+        // if(fontData.fClass){
+        //     tHelper.style.fontFamily = 'inherit';
+        //     tHelper.setAttribute('class', fontData.fClass);
+        // } else {
+        //     tHelper.style.fontFamily = fontData.fFamily;
+        // }
+        // def.appendChild(tHelper);
+        // var tCanvasHelper = createTag('canvas').getContext('2d');
+        // tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px '+ fontData.fFamily;
+        // //tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+        // return tHelper;
+        return {};
     }
 
     function addFonts(fontData, defs){

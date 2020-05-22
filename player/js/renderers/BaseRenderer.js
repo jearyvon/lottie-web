@@ -33,7 +33,8 @@ BaseRenderer.prototype.createItem = function(layer){
         case 13:
             return this.createCamera(layer);
     }
-    if(layer.ty==9&&layer.refId){
+    if(layer.ty==9&&layer.vId){
+        //旧版导出视频层携带截图
         return this.createImage(layer);
     }
     return this.createNull(layer);
